@@ -32,7 +32,7 @@ pip install numpy pandas tensorflow keras opencv-python matplotlib scikit-learn 
 
 
 File Structure
-├── best_resnet18_96.pth [Download](https://drive.google.com/uc?export=download&id=1v-55qBSYhXZCd-0SQ-zhTWaURB-kaLb-)           # Trained resnet model
+├── best_resnet18_96.pth [Download](<https://drive.google.com/uc?export=download&id=1v-55qBSYhXZCd-0SQ-z...>) # Trained resnet model
 ├── best_smallcnn_96.pth           # Trained deep learning model
 ├── 04_Hand_Gesture.ipynb          # Script to train model on LEAP dataset
 ├── 04_Hand_Gesture_Webcam.py      # Webcam-based inference script
