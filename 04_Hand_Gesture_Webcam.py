@@ -6,7 +6,7 @@ from torchvision import models
 from PIL import Image
 import mediapipe as mp
 
-# --- SmallCNN (from training) ---
+
 class SmallCNN(nn.Module):
     def __init__(self, num_classes=10):
         super().__init__()
@@ -46,7 +46,7 @@ def resnet18_1ch(num_classes=10):
 def run_webcam_with_hands(model_path, use_resnet=False, img_size=96, label_names=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load model
+    
     if use_resnet:
         model = resnet18_1ch(10).to(device)
     else:
@@ -56,7 +56,7 @@ def run_webcam_with_hands(model_path, use_resnet=False, img_size=96, label_names
     model.load_state_dict(ckpt["model"])
     model.eval()
 
-    # Preprocessing (same as eval_tfms)
+    
     transform = transforms.Compose([
         transforms.Resize((img_size, img_size)),
         transforms.ToTensor(),
@@ -66,7 +66,7 @@ def run_webcam_with_hands(model_path, use_resnet=False, img_size=96, label_names
     if label_names is None:
         label_names = [str(i) for i in range(10)]
 
-    # Mediapipe hands setup
+    
     mp_hands = mp.solutions.hands
     mp_draw = mp.solutions.drawing_utils
     hands = mp_hands.Hands(static_image_mode=False,
@@ -86,19 +86,19 @@ def run_webcam_with_hands(model_path, use_resnet=False, img_size=96, label_names
 
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
-                # Get bounding box
+                
                 h, w, c = frame.shape
                 x_coords = [lm.x for lm in hand_landmarks.landmark]
                 y_coords = [lm.y for lm in hand_landmarks.landmark]
                 xmin, xmax = int(min(x_coords) * w), int(max(x_coords) * w)
                 ymin, ymax = int(min(y_coords) * h), int(max(y_coords) * h)
 
-                # Add padding
+                
                 pad = 20
                 xmin, xmax = max(0, xmin-pad), min(w, xmax+pad)
                 ymin, ymax = max(0, ymin-pad), min(h, ymax+pad)
 
-                # Crop and preprocess
+                
                 hand_img = frame[ymin:ymax, xmin:xmax]
                 if hand_img.size != 0:
                     gray = cv2.cvtColor(hand_img, cv2.COLOR_BGR2GRAY)
@@ -112,13 +112,13 @@ def run_webcam_with_hands(model_path, use_resnet=False, img_size=96, label_names
                         pred_label = label_names[pred]
                         pred_conf = probs[pred].item()
 
-                    # Draw bounding box + label
+                    
                     cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
                     cv2.putText(frame, f"{pred_label} ({pred_conf*100:.1f}%)",
                                 (xmin, ymin-10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
-                # Optionally draw landmarks
+                
                 mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
         cv2.imshow("LeapGest Recognition (with Hand Detection)", frame)
@@ -131,7 +131,7 @@ def run_webcam_with_hands(model_path, use_resnet=False, img_size=96, label_names
 
 
 if __name__ == "__main__":
-    # Use either SmallCNN or ResNet18
+    # For SmallCNN
     # MODEL_PATH = r"C:\Programming\Prodigy Infotech\PRODIGY_ML_04\best_smallcnn_96.pth"
     # run_webcam_with_hands(MODEL_PATH, use_resnet=False, img_size=96)
 
